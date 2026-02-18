@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: DiplomBackednd
+  datasource:
+    jpa:
+      show-sql: true
