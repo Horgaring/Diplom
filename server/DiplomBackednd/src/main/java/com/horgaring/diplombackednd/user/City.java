@@ -10,12 +10,15 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-@Table
+@Table(name = "cities")
 public class City {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
+    @Column(nullable = false)
+    private String name;
 
     @OneToMany(mappedBy = "homeTown", fetch = FetchType.LAZY)
     private Set<User> users;
