@@ -79,9 +79,9 @@ class DateAppRepository {
 
     // ── Dating (candidates → UserProfile for UI) ──────────────
 
-    suspend fun getProfiles(): List<UserProfile> {
+    suspend fun getProfiles(pageSize: Int, pageNumber: Int): List<UserProfile> {
         return try {
-            api.getCandidates().map { it.toUserProfile() }
+            api.getCandidates(pageSize = pageSize, pageNumber = pageNumber).map { it.toUserProfile() }
         } catch (e: Exception) {
             emptyList()
         }
@@ -225,7 +225,7 @@ class DateAppRepository {
             name = listOfNotNull(firstName, lastName).joinToString(" "),
             age = age,
             bio = bio ?: "",
-            imageUrl = avatarUrl ?: "",
+            imageUrl = fixAvatarUrl(avatarUrl),
             location = city ?: "",
             gender = gender ?: ""
         )
@@ -238,7 +238,7 @@ class DateAppRepository {
                 id = userId ?: "",
                 name = listOfNotNull(firstName, lastName).joinToString(" "),
                 bio = bio ?: "",
-                imageUrl = avatarUrl ?: ""
+                imageUrl = fixAvatarUrl(avatarUrl)
             ),
             matchedAt = matchedAt?.let { parseInstantToMillis(it) } ?: System.currentTimeMillis()
         )
@@ -253,7 +253,7 @@ class DateAppRepository {
                 user = UserProfile(
                     id = partnerId ?: "",
                     name = partnerName,
-                    imageUrl = partnerAvatarUrl ?: ""
+                    imageUrl = fixAvatarUrl(partnerAvatarUrl)
                 )
             ),
             lastMessage = lastMessage ?: "",
@@ -272,6 +272,9 @@ class DateAppRepository {
             isFromMe = senderId == myId
         )
     }
+
+    private fun fixAvatarUrl(url: String?): String? =
+        url?.replace("://localhost:", "://10.0.2.2:")
 
     private fun parseInstantToMillis(value: String): Long {
         return try {

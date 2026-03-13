@@ -1,5 +1,6 @@
 package com.horgaring.diplombackednd.user;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -24,5 +25,5 @@ public interface UserRepository extends JpaRepository<User, UUID> {
               )
             ORDER BY function('RANDOM')
             """)
-    List<User> findCandidates(@Param("userId") UUID userId);
+    List<User> findCandidates(@Param("userId") UUID userId, Pageable pageable);
 }

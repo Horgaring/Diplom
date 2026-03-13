@@ -118,9 +118,7 @@ fun SwipeScreen(
                     .padding(horizontal = 16.dp, vertical = 8.dp),
                 contentAlignment = Alignment.Center
             ) {
-                if (isLoading) {
-                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                } else if (currentIndex < profiles.size) {
+                if (currentIndex < profiles.size) {
                     // Show next card behind (peek)
                     if (currentIndex + 1 < profiles.size) {
                         ProfileCard(
@@ -136,6 +134,8 @@ fun SwipeScreen(
                         onSwipeLeft = { swipeViewModel.swipeLeft() },
                         onSwipeRight = { swipeViewModel.swipeRight() }
                     )
+                } else if (isLoading) {
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 } else {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -381,7 +381,7 @@ fun ProfileCard(
                             )
                         )
                 ) {
-                    if (profile.imageUrl.isNotBlank()) {
+                    if (!profile.imageUrl.isNullOrBlank()) {
                         AsyncImage(
                             model = profile.imageUrl,
                             contentDescription = "${profile.name} photo",

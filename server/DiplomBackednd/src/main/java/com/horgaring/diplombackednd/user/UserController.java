@@ -51,7 +51,7 @@ public class UserController {
             @AuthenticationPrincipal User user,
             @RequestParam("file") MultipartFile file
     ) throws IOException {
-        Path uploadDir = Paths.get("uploads/avatars").toAbsolutePath().normalize();
+        Path uploadDir = Paths.get("uploads/").toAbsolutePath().normalize();
         Files.createDirectories(uploadDir);
 
         String filename = user.getId() + "_" + System.currentTimeMillis()
@@ -60,7 +60,7 @@ public class UserController {
         Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
 
         String avatarUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/uploads/avatars/")
+                .path("/uploads/")
                 .path(filename)
                 .toUriString();
 

@@ -96,7 +96,7 @@ fun ChatScreen(
                         items(conversations) { conv ->
                             NewMatchBubble(
                                 name = conv.match.user.name,
-                                imageUrl = conv.match.user.imageUrl,
+                                imageUrl = conv.match.user.imageUrl.orEmpty(),
                                 onClick = {
                                     navController.navigate("conversation/${conv.id}")
                                 }
@@ -254,7 +254,7 @@ fun ConversationCard(
         ) {
             // Avatar
             AvatarImage(
-                imageUrl = conversation.match.user.imageUrl.ifBlank { null },
+                imageUrl = conversation.match.user.imageUrl?.ifBlank { null },
                 name = conversation.match.user.name,
                 size = 56.dp
             )

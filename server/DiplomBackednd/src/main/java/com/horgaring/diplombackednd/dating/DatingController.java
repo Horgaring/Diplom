@@ -17,8 +17,10 @@ public class DatingController {
     private final DatingService datingService;
 
     @GetMapping("/candidates")
-    public ResponseEntity<List<UserCardDto>> getCandidates(@AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(datingService.getCandidates(user.getId()));
+    public ResponseEntity<List<UserCardDto>> getCandidates(@AuthenticationPrincipal User user,
+                                                           @RequestParam("page_size") Integer pageSize,
+                                                           @RequestParam("page_number") Integer pageNumber) {
+        return ResponseEntity.ok(datingService.getCandidates(user.getId(), pageSize, pageNumber));
     }
 
     @PostMapping("/swipe")

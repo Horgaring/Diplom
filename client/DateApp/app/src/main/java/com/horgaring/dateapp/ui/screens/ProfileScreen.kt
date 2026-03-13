@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.horgaring.dateapp.data.api.ApiClient
 import com.horgaring.dateapp.data.api.TokenManager
 import com.horgaring.dateapp.data.api.dto.UpdateProfileRequest
 import com.horgaring.dateapp.data.repository.DateAppRepository
@@ -56,7 +57,7 @@ fun ProfileScreen(navController: NavController) {
                         tempFile.outputStream().use { output -> input.copyTo(output) }
                     }
                     val result = repository.uploadAvatar(tempFile)
-                    avatarUrl = result.avatarUrl
+                    avatarUrl = result.avatarUrl?.replace("://localhost:", "://10.0.2.2:")
                 } catch (_: Exception) { }
                 isUploading = false
             }
@@ -71,7 +72,7 @@ fun ProfileScreen(navController: NavController) {
             email = profile.email ?: ""
             bio = profile.bio ?: ""
             gender = profile.gender ?: ""
-            avatarUrl = profile.avatarUrl
+            avatarUrl = profile.avatarUrl?.replace("://localhost:", "://10.0.2.2:")
         } catch (_: Exception) {
             firstName = TokenManager.firstName ?: ""
             email = TokenManager.email ?: ""

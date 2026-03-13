@@ -7,6 +7,8 @@ import com.horgaring.diplombackednd.user.User;
 import com.horgaring.diplombackednd.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,9 +26,9 @@ public class DatingService {
     private final MatchRepository matchRepository;
     private final NotificationService notificationService;
 
-    public List<UserCardDto> getCandidates(UUID currentUserId) {
+    public List<UserCardDto> getCandidates(UUID currentUserId, Integer pageSize, Integer page) {
         log.info("Getting candidates for userId={}", currentUserId);
-        List<User> candidates = userRepository.findCandidates(currentUserId);
+        List<User> candidates = userRepository.findCandidates(currentUserId, PageRequest.of(page, pageSize));
         log.info("Found {} candidates for userId={}", candidates.size(), currentUserId);
         return candidates.stream()
                 .map(this::toUserCard)

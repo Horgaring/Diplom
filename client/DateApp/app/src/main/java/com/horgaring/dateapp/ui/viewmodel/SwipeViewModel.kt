@@ -13,6 +13,11 @@ import kotlinx.coroutines.launch
 class SwipeViewModel : ViewModel() {
 
     private val repository = DateAppRepository()
+    private val pageSize = 10
+    private val preloadThreshold = 2
+
+    private var nextPageNumber = 0
+    private var hasMorePages = true
 
     private val _profiles = MutableStateFlow<List<UserProfile>>(emptyList())
     val profiles: StateFlow<List<UserProfile>> = _profiles.asStateFlow()
@@ -30,15 +35,20 @@ class SwipeViewModel : ViewModel() {
     val showMatchAnimation: StateFlow<Boolean> = _showMatchAnimation.asStateFlow()
 
     init {
-        loadProfiles()
+        refreshProfiles()
     }
 
     fun loadProfiles() {
+        refreshProfiles()
+    }
+
+    private fun refreshProfiles() {
         viewModelScope.launch {
-            _isLoading.value = true
-            _profiles.value = repository.getProfiles()
+            nextPageNumber = 0
+            hasMorePages = true
+            _profiles.value = emptyList()
             _currentIndex.value = 0
-            _isLoading.value = false
+            loadNextPage()
         }
     }
 
@@ -48,7 +58,9 @@ class SwipeViewModel : ViewModel() {
         if (index < profiles.size) {
             viewModelScope.launch {
                 repository.swipe(profiles[index].id, liked = false)
-                _currentIndex.value = index + 1
+                val nextIndex = index + 1
+                _currentIndex.value = nextIndex
+                maybeLoadMore(nextIndex)
             }
         }
     }
@@ -63,7 +75,9 @@ class SwipeViewModel : ViewModel() {
                     _matchResult.value = match
                     _showMatchAnimation.value = true
                 }
-                _currentIndex.value = index + 1
+                val nextIndex = index + 1
+                _currentIndex.value = nextIndex
+                maybeLoadMore(nextIndex)
             }
         }
     }
@@ -71,5 +85,26 @@ class SwipeViewModel : ViewModel() {
     fun dismissMatch() {
         _showMatchAnimation.value = false
         _matchResult.value = null
+    }
+
+    private suspend fun maybeLoadMore(nextIndex: Int) {
+        val remaining = _profiles.value.size - nextIndex
+        if (hasMorePages && remaining <= preloadThreshold) {
+            loadNextPage()
+        }
+    }
+
+    private suspend fun loadNextPage() {
+        if (_isLoading.value || !hasMorePages) return
+
+        _isLoading.value = true
+        val page = repository.getProfiles(pageSize = pageSize, pageNumber = nextPageNumber)
+        if (page.isEmpty()) {
+            hasMorePages = false
+        } else {
+            _profiles.value = _profiles.value + page
+            nextPageNumber += 1
+        }
+        _isLoading.value = false
     }
 }

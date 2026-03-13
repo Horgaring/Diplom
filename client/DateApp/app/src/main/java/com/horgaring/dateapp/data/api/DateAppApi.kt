@@ -38,7 +38,10 @@ interface DateAppApi {
     // ── Dating ───────────────────────────────────────────────
 
     @GET("dating/candidates")
-    suspend fun getCandidates(): List<UserCardDto>
+    suspend fun getCandidates(
+        @Query("page_size") pageSize: Int,
+        @Query("page_number") pageNumber: Int
+    ): List<UserCardDto>
 
     @POST("dating/swipe")
     suspend fun swipe(@Body request: SwipeRequest): SwipeResponse

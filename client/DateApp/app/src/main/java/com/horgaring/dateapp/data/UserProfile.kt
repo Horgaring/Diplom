@@ -5,7 +5,7 @@ data class UserProfile(
     val name: String = "",
     val age: Int = 0,
     val bio: String = "",
-    val imageUrl: String = "",
+    val imageUrl: String? = "",
     val interests: List<String> = emptyList(),
     val location: String = "",
     val gender: String = "",
