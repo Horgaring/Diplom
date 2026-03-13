@@ -6,6 +6,7 @@ import com.horgaring.diplombackednd.notification.NotificationType;
 import com.horgaring.diplombackednd.user.User;
 import com.horgaring.diplombackednd.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class DatingService {
@@ -23,7 +25,9 @@ public class DatingService {
     private final NotificationService notificationService;
 
     public List<UserCardDto> getCandidates(UUID currentUserId) {
+        log.info("Getting candidates for userId={}", currentUserId);
         List<User> candidates = userRepository.findCandidates(currentUserId);
+        log.info("Found {} candidates for userId={}", candidates.size(), currentUserId);
         return candidates.stream()
                 .map(this::toUserCard)
                 .collect(Collectors.toList());
@@ -31,6 +35,7 @@ public class DatingService {
 
     @Transactional
     public SwipeResponse swipe(UUID currentUserId, SwipeRequest request) {
+        log.info("Swipe: userId={}, targetUserId={}, liked={}", currentUserId, request.getTargetUserId(), request.getLiked());
         User currentUser = userRepository.findById(currentUserId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", currentUserId));
         User targetUser = userRepository.findById(request.getTargetUserId())
@@ -55,11 +60,13 @@ public class DatingService {
         );
 
         if (mutualLike) {
+            log.info("Mutual like detected! Creating match between userId={} and userId={}", currentUserId, request.getTargetUserId());
             Match match = Match.builder()
                     .user1(currentUser)
                     .user2(targetUser)
                     .build();
             matchRepository.save(match);
+            log.info("Match created: matchId={}", match.getId());
 
             notificationService.createNotification(
                     currentUser,
@@ -88,7 +95,9 @@ public class DatingService {
     }
 
     public List<MatchDto> getMatches(UUID currentUserId) {
+        log.info("Getting matches for userId={}", currentUserId);
         List<Match> matches = matchRepository.findAllByUserId(currentUserId);
+        log.info("Found {} matches for userId={}", matches.size(), currentUserId);
         return matches.stream()
                 .map(match -> {
                     User other = match.getUser1().getId().equals(currentUserId)

@@ -14,6 +14,14 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
+logging:
+  level:
+    root: INFO
+    com.horgaring.diplombackednd: DEBUG
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+    org.hibernate.SQL: DEBUG
+
 app:
   jwt:
     secret: bXlTdXBlclNlY3JldEtleUZvckp3dFRva2VuU2lnbmluZ1RoYXRJc0xvbmdFbm91Z2g=

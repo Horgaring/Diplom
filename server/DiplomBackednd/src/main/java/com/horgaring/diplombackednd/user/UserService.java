@@ -2,6 +2,7 @@ package com.horgaring.diplombackednd.user;
 
 import com.horgaring.diplombackednd.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
@@ -19,14 +21,21 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        log.debug("Loading user by email={}", email);
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+                .orElseThrow(() -> {
+                    log.warn("User not found with email={}", email);
+                    return new UsernameNotFoundException("User not found with email: " + email);
+                });
     }
 
     public List<UserProfileDto> getAllUsers() {
-        return userRepository.findAll().stream()
+        log.info("Fetching all users");
+        List<UserProfileDto> users = userRepository.findAll().stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
+        log.info("Returned {} users", users.size());
+        return users;
     }
 
     public User getUserById(UUID userId) {
@@ -39,6 +48,7 @@ public class UserService implements UserDetailsService {
     }
 
     public User updateProfile(UUID userId, UpdateProfileRequest request) {
+        log.info("Updating profile for userId={}", userId);
         User user = getUserById(userId);
         if (request.getFirstName() != null) {
             user.setFirstName(request.getFirstName());
@@ -55,20 +65,25 @@ public class UserService implements UserDetailsService {
         if (request.getBirthDate() != null) {
             user.setBirthDate(request.getBirthDate());
         }
-        return userRepository.save(user);
+        User saved = userRepository.save(user);
+        log.info("Profile updated for userId={}", userId);
+        return saved;
     }
 
     public User updateAvatarUrl(UUID userId, String avatarUrl) {
+        log.info("Updating avatar for userId={}", userId);
         User user = getUserById(userId);
         user.setAvatarUrl(avatarUrl);
         return userRepository.save(user);
     }
 
     public void deleteUser(UUID userId) {
+        log.info("Deleting user userId={}", userId);
         if (!userRepository.existsById(userId)) {
             throw new ResourceNotFoundException("User", userId);
         }
         userRepository.deleteById(userId);
+        log.info("User deleted userId={}", userId);
     }
 
     public UserProfileDto toDto(User user) {

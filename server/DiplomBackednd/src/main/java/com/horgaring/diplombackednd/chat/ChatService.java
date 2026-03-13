@@ -8,6 +8,7 @@ import com.horgaring.diplombackednd.notification.NotificationService;
 import com.horgaring.diplombackednd.notification.NotificationType;
 import com.horgaring.diplombackednd.user.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatService {
@@ -27,8 +29,10 @@ public class ChatService {
     private final NotificationService notificationService;
 
     public ChatRoom getOrCreateChatRoom(UUID matchId) {
+        log.info("Getting or creating chat room for matchId={}", matchId);
         return chatRoomRepository.findByMatchId(matchId)
                 .orElseGet(() -> {
+                    log.info("Creating new chat room for matchId={}", matchId);
                     Match match = matchRepository.findById(matchId)
                             .orElseThrow(() -> new ResourceNotFoundException("Match", matchId));
                     ChatRoom chatRoom = ChatRoom.builder()
@@ -36,12 +40,16 @@ public class ChatService {
                             .user1(match.getUser1())
                             .user2(match.getUser2())
                             .build();
-                    return chatRoomRepository.save(chatRoom);
+                    ChatRoom saved = chatRoomRepository.save(chatRoom);
+                    log.info("Chat room created: chatRoomId={}", saved.getId());
+                    return saved;
                 });
     }
 
     public List<ChatRoomDto> getUserChatRooms(UUID userId) {
+        log.info("Getting chat rooms for userId={}", userId);
         List<ChatRoom> rooms = chatRoomRepository.findAllByUserId(userId);
+        log.info("Found {} chat rooms for userId={}", rooms.size(), userId);
         return rooms.stream()
                 .map(room -> toChatRoomDto(room, userId))
                 .collect(Collectors.toList());
@@ -49,6 +57,7 @@ public class ChatService {
 
     @Transactional
     public MessageDto sendMessage(UUID chatRoomId, User sender, SendMessageRequest request) {
+        log.info("Sending message in chatRoomId={} from userId={}", chatRoomId, sender.getId());
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new ResourceNotFoundException("ChatRoom", chatRoomId));
 
@@ -63,6 +72,7 @@ public class ChatService {
                 .content(request.getContent())
                 .build();
         messageRepository.save(message);
+        log.info("Message saved: messageId={} in chatRoomId={}", message.getId(), chatRoomId);
 
         User recipient = chatRoom.getUser1().getId().equals(sender.getId())
                 ? chatRoom.getUser2()
@@ -82,6 +92,7 @@ public class ChatService {
     }
 
     public List<MessageDto> getMessages(UUID chatRoomId, UUID userId, int page, int size) {
+        log.debug("Getting messages for chatRoomId={}, userId={}, page={}, size={}", chatRoomId, userId, page, size);
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new ResourceNotFoundException("ChatRoom", chatRoomId));
 
@@ -101,6 +112,7 @@ public class ChatService {
 
     @Transactional
     public void markMessagesAsRead(UUID chatRoomId, UUID userId) {
+        log.info("Marking messages as read in chatRoomId={} for userId={}", chatRoomId, userId);
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new ResourceNotFoundException("ChatRoom", chatRoomId));
 
@@ -110,6 +122,7 @@ public class ChatService {
         }
 
         messageRepository.markAllAsRead(chatRoomId, userId);
+        log.info("Messages marked as read in chatRoomId={} for userId={}", chatRoomId, userId);
     }
 
     public ChatRoomDto getChatRoomDto(UUID chatRoomId, UUID userId) {
@@ -126,6 +139,7 @@ public class ChatService {
 
     @Transactional
     public void deleteChatRoom(UUID chatRoomId, UUID userId) {
+        log.info("Deleting chat room chatRoomId={} by userId={}", chatRoomId, userId);
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new ResourceNotFoundException("ChatRoom", chatRoomId));
 
@@ -138,6 +152,7 @@ public class ChatService {
                 chatRoomId, PageRequest.of(0, Integer.MAX_VALUE)
         ).getContent());
         chatRoomRepository.delete(chatRoom);
+        log.info("Chat room deleted: chatRoomId={}", chatRoomId);
     }
 
     public MessageDto getMessageById(UUID messageId, UUID userId) {
@@ -155,6 +170,7 @@ public class ChatService {
 
     @Transactional
     public void deleteMessage(UUID messageId, UUID userId) {
+        log.info("Deleting message messageId={} by userId={}", messageId, userId);
         Message message = messageRepository.findById(messageId)
                 .orElseThrow(() -> new ResourceNotFoundException("Message", messageId));
 
@@ -163,6 +179,7 @@ public class ChatService {
         }
 
         messageRepository.delete(message);
+        log.info("Message deleted: messageId={}", messageId);
     }
 
     private ChatRoomDto toChatRoomDto(ChatRoom room, UUID currentUserId) {
