@@ -190,6 +190,7 @@ public class ChatService {
                 .partnerId(partner.getId())
                 .partnerFirstName(partner.getFirstName())
                 .partnerLastName(partner.getLastName())
+                .partnerAvatarUrl(partner.getAvatarUrl())
                 .lastMessage(lastMsg)
                 .lastMessageAt(lastMsgAt)
                 .unreadCount(unread)

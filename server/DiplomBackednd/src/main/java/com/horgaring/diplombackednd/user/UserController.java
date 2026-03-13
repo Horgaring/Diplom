@@ -4,7 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,9 +46,38 @@ public class UserController {
         return ResponseEntity.ok(userService.toDto(updated));
     }
 
+    @PostMapping("/me/avatar")
+    public ResponseEntity<UserProfileDto> uploadAvatar(
+            @AuthenticationPrincipal User user,
+            @RequestParam("file") MultipartFile file
+    ) throws IOException {
+        Path uploadDir = Paths.get("uploads/avatars").toAbsolutePath().normalize();
+        Files.createDirectories(uploadDir);
+
+        String filename = user.getId() + "_" + System.currentTimeMillis()
+                + getExtension(file.getOriginalFilename());
+        Path target = uploadDir.resolve(filename);
+        Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
+
+        String avatarUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/uploads/avatars/")
+                .path(filename)
+                .toUriString();
+
+        User updated = userService.updateAvatarUrl(user.getId(), avatarUrl);
+        return ResponseEntity.ok(userService.toDto(updated));
+    }
+
     @DeleteMapping("/{userId}")
     public ResponseEntity<Void> deleteUser(@PathVariable UUID userId) {
         userService.deleteUser(userId);
         return ResponseEntity.noContent().build();
+    }
+
+    private String getExtension(String filename) {
+        if (filename != null && filename.contains(".")) {
+            return filename.substring(filename.lastIndexOf('.'));
+        }
+        return ".jpg";
     }
 }

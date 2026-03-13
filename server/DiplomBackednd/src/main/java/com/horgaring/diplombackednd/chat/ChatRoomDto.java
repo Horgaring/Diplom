@@ -19,6 +19,7 @@ public class ChatRoomDto {
     private UUID partnerId;
     private String partnerFirstName;
     private String partnerLastName;
+    private String partnerAvatarUrl;
     private String lastMessage;
     private Instant lastMessageAt;
     private long unreadCount;

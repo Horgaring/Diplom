@@ -19,5 +19,6 @@ public class MatchDto {
     private String firstName;
     private String lastName;
     private String bio;
+    private String avatarUrl;
     private Instant matchedAt;
 }

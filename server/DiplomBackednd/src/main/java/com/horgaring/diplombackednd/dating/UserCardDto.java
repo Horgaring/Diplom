@@ -21,4 +21,5 @@ public class UserCardDto {
     private String gender;
     private String bio;
     private String city;
+    private String avatarUrl;
 }

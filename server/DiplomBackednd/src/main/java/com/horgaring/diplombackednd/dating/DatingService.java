@@ -100,6 +100,7 @@ public class DatingService {
                             .firstName(other.getFirstName())
                             .lastName(other.getLastName())
                             .bio(other.getBio())
+                            .avatarUrl(other.getAvatarUrl())
                             .matchedAt(match.getCreatedAt())
                             .build();
                 })
@@ -115,6 +116,7 @@ public class DatingService {
                 .gender(user.getGender() != null ? user.getGender().name() : null)
                 .bio(user.getBio())
                 .city(user.getHomeTown() != null ? user.getHomeTown().getId().toString() : null)
+                .avatarUrl(user.getAvatarUrl())
                 .build();
     }
 }

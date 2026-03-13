@@ -21,4 +21,5 @@ public class UserProfileDto {
     private LocalDate birthDate;
     private String gender;
     private String bio;
+    private String avatarUrl;
 }

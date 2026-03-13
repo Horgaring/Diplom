@@ -1,0 +1,775 @@
+{
+  "info": {
+    "_postman_id": "d1f0e1a0-1234-5678-abcd-000000000001",
+    "name": "DiplomBackend API",
+    "description": "Postman collection for DiplomBackend dating application API.\n\nAll endpoints except /api/auth/** require a Bearer token in the Authorization header.\n\nWorkflow:\n1. Register or Login to get a JWT token\n2. Use the token in subsequent requests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "description": "Authentication endpoints (public, no token required)",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"birthDate\": \"2000-01-15\",\n  \"gender\": \"MALE\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "description": "Register a new user account.\n\n**Request body:**\n| Field | Type | Required | Validation |\n|---|---|---|---|\n| email | String | ✅ | Must be valid email |\n| password | String | ✅ | 6–100 characters |\n| firstName | String | ✅ | Not blank |\n| lastName | String | ❌ | |\n| birthDate | LocalDate (yyyy-MM-dd) | ✅ | Not null |\n| gender | String | ❌ | e.g. MALE, FEMALE |\n\n**Response:** `AuthResponse` with JWT token, userId, email, firstName."
+          },
+          "response": [
+            {
+              "name": "200 – Successful registration",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"token\": \"eyJhbGciOiJIUzI1NiJ9...\",\n  \"userId\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"email\": \"user@example.com\",\n  \"firstName\": \"John\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Authenticate an existing user.\n\n**Request body:**\n| Field | Type | Required |\n|---|---|---|\n| email | String | ✅ |\n| password | String | ✅ |\n\n**Response:** `AuthResponse` with JWT token."
+          },
+          "response": [
+            {
+              "name": "200 – Successful login",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"token\": \"eyJhbGciOiJIUzI1NiJ9...\",\n  \"userId\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"email\": \"user@example.com\",\n  \"firstName\": \"John\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "description": "User profile management endpoints (require Bearer token unless noted)",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"]
+            },
+            "description": "Get a list of all user profiles.\n\n**Response:** `List<UserProfileDto>`"
+          },
+          "response": [
+            {
+              "name": "200 – User list",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "[\n  {\n    \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"email\": \"user@example.com\",\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"birthDate\": \"2000-01-15\",\n    \"gender\": \"MALE\",\n    \"bio\": \"Hello world\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Get User By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/:userId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", ":userId"],
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": "550e8400-e29b-41d4-a716-446655440000",
+                  "description": "UUID of the user"
+                }
+              ]
+            },
+            "description": "Get a user profile by their UUID.\n\n**Path params:**\n- `userId` (UUID) – target user ID\n\n**Response:** `UserProfileDto`"
+          },
+          "response": [
+            {
+              "name": "200 – User profile",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"email\": \"user@example.com\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"birthDate\": \"2000-01-15\",\n  \"gender\": \"MALE\",\n  \"bio\": \"Hello world\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "me"]
+            },
+            "description": "Get the authenticated user's own profile.\n\n**Response:** `UserProfileDto`"
+          },
+          "response": [
+            {
+              "name": "200 – My profile",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"email\": \"user@example.com\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"birthDate\": \"2000-01-15\",\n  \"gender\": \"MALE\",\n  \"bio\": \"Hello world\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update My Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"bio\": \"Updated bio text\",\n  \"gender\": \"MALE\",\n  \"birthDate\": \"2000-01-15\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "me"]
+            },
+            "description": "Update the authenticated user's profile.\n\n**Request body (all fields optional):**\n| Field | Type |\n|---|---|\n| firstName | String |\n| lastName | String |\n| bio | String |\n| gender | String |\n| birthDate | LocalDate (yyyy-MM-dd) |\n\n**Response:** `UserProfileDto`"
+          },
+          "response": [
+            {
+              "name": "200 – Updated profile",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"email\": \"user@example.com\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"birthDate\": \"2000-01-15\",\n  \"gender\": \"MALE\",\n  \"bio\": \"Updated bio text\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/:userId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", ":userId"],
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": "550e8400-e29b-41d4-a716-446655440000",
+                  "description": "UUID of the user to delete"
+                }
+              ]
+            },
+            "description": "Delete a user by UUID.\n\n**Response:** `204 No Content`"
+          },
+          "response": [
+            {
+              "name": "204 – Deleted",
+              "status": "No Content",
+              "code": 204,
+              "header": [],
+              "body": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Dating",
+      "description": "Dating / swiping / matching endpoints",
+      "item": [
+        {
+          "name": "Get Candidates",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/dating/candidates",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "dating", "candidates"]
+            },
+            "description": "Get a list of candidate user cards for swiping.\n\n**Response:** `List<UserCardDto>`\n\n| Field | Type |\n|---|---|\n| id | UUID |\n| firstName | String |\n| lastName | String |\n| birthDate | LocalDate |\n| gender | String |\n| bio | String |\n| city | String |"
+          },
+          "response": [
+            {
+              "name": "200 – Candidates",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "[\n  {\n    \"id\": \"550e8400-e29b-41d4-a716-446655440001\",\n    \"firstName\": \"Jane\",\n    \"lastName\": \"Smith\",\n    \"birthDate\": \"1998-05-20\",\n    \"gender\": \"FEMALE\",\n    \"bio\": \"Love hiking\",\n    \"city\": \"Moscow\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Swipe",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"targetUserId\": \"550e8400-e29b-41d4-a716-446655440001\",\n  \"liked\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/dating/swipe",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "dating", "swipe"]
+            },
+            "description": "Swipe on a candidate (like or dislike).\n\n**Request body:**\n| Field | Type | Required |\n|---|---|---|\n| targetUserId | UUID | ✅ |\n| liked | Boolean | ✅ |\n\n**Response:** `SwipeResponse`\n\n| Field | Type |\n|---|---|\n| matched | boolean |\n| matchId | UUID (null if not matched) |\n| matchedUserId | UUID (null if not matched) |\n| matchedUserName | String (null if not matched) |"
+          },
+          "response": [
+            {
+              "name": "200 – Swipe result (matched)",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"matched\": true,\n  \"matchId\": \"660e8400-e29b-41d4-a716-446655440099\",\n  \"matchedUserId\": \"550e8400-e29b-41d4-a716-446655440001\",\n  \"matchedUserName\": \"Jane\"\n}"
+            },
+            {
+              "name": "200 – Swipe result (not matched)",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"matched\": false,\n  \"matchId\": null,\n  \"matchedUserId\": null,\n  \"matchedUserName\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Matches",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/dating/matches",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "dating", "matches"]
+            },
+            "description": "Get all matches for the authenticated user.\n\n**Response:** `List<MatchDto>`\n\n| Field | Type |\n|---|---|\n| matchId | UUID |\n| userId | UUID |\n| firstName | String |\n| lastName | String |\n| bio | String |\n| matchedAt | Instant (ISO-8601) |"
+          },
+          "response": [
+            {
+              "name": "200 – Matches",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "[\n  {\n    \"matchId\": \"660e8400-e29b-41d4-a716-446655440099\",\n    \"userId\": \"550e8400-e29b-41d4-a716-446655440001\",\n    \"firstName\": \"Jane\",\n    \"lastName\": \"Smith\",\n    \"bio\": \"Love hiking\",\n    \"matchedAt\": \"2025-03-12T14:30:00Z\"\n  }\n]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Chat",
+      "description": "Chat room and messaging endpoints",
+      "item": [
+        {
+          "name": "Get My Chat Rooms",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/chat/rooms",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "chat", "rooms"]
+            },
+            "description": "Get all chat rooms for the authenticated user.\n\n**Response:** `List<ChatRoomDto>`"
+          },
+          "response": [
+            {
+              "name": "200 – Chat rooms",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "[\n  {\n    \"chatRoomId\": \"770e8400-e29b-41d4-a716-446655440010\",\n    \"matchId\": \"660e8400-e29b-41d4-a716-446655440099\",\n    \"partnerId\": \"550e8400-e29b-41d4-a716-446655440001\",\n    \"partnerFirstName\": \"Jane\",\n    \"partnerLastName\": \"Smith\",\n    \"lastMessage\": \"Hey!\",\n    \"lastMessageAt\": \"2025-03-12T15:00:00Z\",\n    \"unreadCount\": 2,\n    \"createdAt\": \"2025-03-12T14:30:00Z\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Get Chat Room By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/chat/rooms/:chatRoomId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "chat", "rooms", ":chatRoomId"],
+              "variable": [
+                {
+                  "key": "chatRoomId",
+                  "value": "770e8400-e29b-41d4-a716-446655440010",
+                  "description": "UUID of the chat room"
+                }
+              ]
+            },
+            "description": "Get a specific chat room by ID.\n\n**Response:** `ChatRoomDto`"
+          },
+          "response": [
+            {
+              "name": "200 – Chat room",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"chatRoomId\": \"770e8400-e29b-41d4-a716-446655440010\",\n  \"matchId\": \"660e8400-e29b-41d4-a716-446655440099\",\n  \"partnerId\": \"550e8400-e29b-41d4-a716-446655440001\",\n  \"partnerFirstName\": \"Jane\",\n  \"partnerLastName\": \"Smith\",\n  \"lastMessage\": \"Hey!\",\n  \"lastMessageAt\": \"2025-03-12T15:00:00Z\",\n  \"unreadCount\": 2,\n  \"createdAt\": \"2025-03-12T14:30:00Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Open Chat (by Match ID)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/chat/rooms/match/:matchId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "chat", "rooms", "match", ":matchId"],
+              "variable": [
+                {
+                  "key": "matchId",
+                  "value": "660e8400-e29b-41d4-a716-446655440099",
+                  "description": "UUID of the match"
+                }
+              ]
+            },
+            "description": "Open or create a chat room for a given match.\n\nOnly participants of the match can access this.\n\n**Response:** `ChatRoomDto`"
+          },
+          "response": [
+            {
+              "name": "200 – Chat room opened",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"chatRoomId\": \"770e8400-e29b-41d4-a716-446655440010\",\n  \"matchId\": \"660e8400-e29b-41d4-a716-446655440099\",\n  \"partnerId\": \"550e8400-e29b-41d4-a716-446655440001\",\n  \"partnerFirstName\": \"Jane\",\n  \"partnerLastName\": \"Smith\",\n  \"lastMessage\": null,\n  \"lastMessageAt\": null,\n  \"unreadCount\": 0,\n  \"createdAt\": \"2025-03-12T14:30:00Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Chat Room",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/chat/rooms/:chatRoomId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "chat", "rooms", ":chatRoomId"],
+              "variable": [
+                {
+                  "key": "chatRoomId",
+                  "value": "770e8400-e29b-41d4-a716-446655440010",
+                  "description": "UUID of the chat room"
+                }
+              ]
+            },
+            "description": "Delete a chat room. Only participants can delete.\n\n**Response:** `204 No Content`"
+          },
+          "response": [
+            {
+              "name": "204 – Deleted",
+              "status": "No Content",
+              "code": 204,
+              "header": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Get Messages",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/chat/rooms/:chatRoomId/messages?page=0&size=50",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "chat", "rooms", ":chatRoomId", "messages"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0",
+                  "description": "Page number (default 0)"
+                },
+                {
+                  "key": "size",
+                  "value": "50",
+                  "description": "Page size (default 50)"
+                }
+              ],
+              "variable": [
+                {
+                  "key": "chatRoomId",
+                  "value": "770e8400-e29b-41d4-a716-446655440010",
+                  "description": "UUID of the chat room"
+                }
+              ]
+            },
+            "description": "Get paginated messages for a chat room.\n\n**Query params:**\n- `page` (int, default 0)\n- `size` (int, default 50)\n\n**Response:** `List<MessageDto>`"
+          },
+          "response": [
+            {
+              "name": "200 – Messages",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "[\n  {\n    \"id\": \"880e8400-e29b-41d4-a716-446655440020\",\n    \"chatRoomId\": \"770e8400-e29b-41d4-a716-446655440010\",\n    \"senderId\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"senderFirstName\": \"John\",\n    \"content\": \"Hey!\",\n    \"read\": false,\n    \"createdAt\": \"2025-03-12T15:00:00Z\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Send Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Hello, how are you?\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/chat/rooms/:chatRoomId/messages",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "chat", "rooms", ":chatRoomId", "messages"],
+              "variable": [
+                {
+                  "key": "chatRoomId",
+                  "value": "770e8400-e29b-41d4-a716-446655440010",
+                  "description": "UUID of the chat room"
+                }
+              ]
+            },
+            "description": "Send a message to a chat room.\n\n**Request body:**\n| Field | Type | Required | Validation |\n|---|---|---|---|\n| content | String | ✅ | Not blank, max 2000 chars |\n\n**Response:** `MessageDto`"
+          },
+          "response": [
+            {
+              "name": "200 – Message sent",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"id\": \"880e8400-e29b-41d4-a716-446655440021\",\n  \"chatRoomId\": \"770e8400-e29b-41d4-a716-446655440010\",\n  \"senderId\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"senderFirstName\": \"John\",\n  \"content\": \"Hello, how are you?\",\n  \"read\": false,\n  \"createdAt\": \"2025-03-12T15:05:00Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Message By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/chat/messages/:messageId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "chat", "messages", ":messageId"],
+              "variable": [
+                {
+                  "key": "messageId",
+                  "value": "880e8400-e29b-41d4-a716-446655440020",
+                  "description": "UUID of the message"
+                }
+              ]
+            },
+            "description": "Get a single message by its ID.\n\n**Response:** `MessageDto`"
+          },
+          "response": [
+            {
+              "name": "200 – Message",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"id\": \"880e8400-e29b-41d4-a716-446655440020\",\n  \"chatRoomId\": \"770e8400-e29b-41d4-a716-446655440010\",\n  \"senderId\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"senderFirstName\": \"John\",\n  \"content\": \"Hey!\",\n  \"read\": true,\n  \"createdAt\": \"2025-03-12T15:00:00Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Message",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/chat/messages/:messageId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "chat", "messages", ":messageId"],
+              "variable": [
+                {
+                  "key": "messageId",
+                  "value": "880e8400-e29b-41d4-a716-446655440020",
+                  "description": "UUID of the message"
+                }
+              ]
+            },
+            "description": "Delete a message. Only the sender can delete.\n\n**Response:** `204 No Content`"
+          },
+          "response": [
+            {
+              "name": "204 – Deleted",
+              "status": "No Content",
+              "code": 204,
+              "header": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Mark Messages As Read",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/chat/rooms/:chatRoomId/read",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "chat", "rooms", ":chatRoomId", "read"],
+              "variable": [
+                {
+                  "key": "chatRoomId",
+                  "value": "770e8400-e29b-41d4-a716-446655440010",
+                  "description": "UUID of the chat room"
+                }
+              ]
+            },
+            "description": "Mark all messages in a chat room as read for the authenticated user.\n\n**Response:** `200 OK` (empty body)"
+          },
+          "response": [
+            {
+              "name": "200 – Marked as read",
+              "status": "OK",
+              "code": 200,
+              "header": [],
+              "body": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "description": "Notification management endpoints",
+      "item": [
+        {
+          "name": "Get All Notifications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notifications"]
+            },
+            "description": "Get all notifications for the authenticated user.\n\n**Response:** `List<NotificationDto>`\n\n| Field | Type |\n|---|---|\n| id | UUID |\n| type | Enum: NEW_MATCH, NEW_MESSAGE, NEW_LIKE |\n| title | String |\n| body | String |\n| referenceId | UUID |\n| read | boolean |\n| createdAt | Instant (ISO-8601) |"
+          },
+          "response": [
+            {
+              "name": "200 – All notifications",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "[\n  {\n    \"id\": \"990e8400-e29b-41d4-a716-446655440030\",\n    \"type\": \"NEW_MATCH\",\n    \"title\": \"New match!\",\n    \"body\": \"You matched with Jane\",\n    \"referenceId\": \"660e8400-e29b-41d4-a716-446655440099\",\n    \"read\": false,\n    \"createdAt\": \"2025-03-12T14:30:00Z\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Get Unread Notifications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications/unread",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notifications", "unread"]
+            },
+            "description": "Get only unread notifications.\n\n**Response:** `List<NotificationDto>`"
+          },
+          "response": [
+            {
+              "name": "200 – Unread notifications",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "[\n  {\n    \"id\": \"990e8400-e29b-41d4-a716-446655440030\",\n    \"type\": \"NEW_MATCH\",\n    \"title\": \"New match!\",\n    \"body\": \"You matched with Jane\",\n    \"referenceId\": \"660e8400-e29b-41d4-a716-446655440099\",\n    \"read\": false,\n    \"createdAt\": \"2025-03-12T14:30:00Z\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Get Unread Count",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications/unread/count",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notifications", "unread", "count"]
+            },
+            "description": "Get the count of unread notifications.\n\n**Response:**\n```json\n{ \"count\": 5 }\n```"
+          },
+          "response": [
+            {
+              "name": "200 – Unread count",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"count\": 5\n}"
+            }
+          ]
+        },
+        {
+          "name": "Mark All As Read",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications/read-all",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notifications", "read-all"]
+            },
+            "description": "Mark all notifications as read.\n\n**Response:** `200 OK` (empty body)"
+          },
+          "response": [
+            {
+              "name": "200 – All marked as read",
+              "status": "OK",
+              "code": 200,
+              "header": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Mark Notification As Read",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications/:notificationId/read",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notifications", ":notificationId", "read"],
+              "variable": [
+                {
+                  "key": "notificationId",
+                  "value": "990e8400-e29b-41d4-a716-446655440030",
+                  "description": "UUID of the notification"
+                }
+              ]
+            },
+            "description": "Mark a single notification as read.\n\n**Response:** `200 OK` (empty body)"
+          },
+          "response": [
+            {
+              "name": "200 – Marked as read",
+              "status": "OK",
+              "code": 200,
+              "header": [],
+              "body": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

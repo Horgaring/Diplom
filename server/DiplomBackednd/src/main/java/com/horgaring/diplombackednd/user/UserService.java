@@ -58,6 +58,12 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
+    public User updateAvatarUrl(UUID userId, String avatarUrl) {
+        User user = getUserById(userId);
+        user.setAvatarUrl(avatarUrl);
+        return userRepository.save(user);
+    }
+
     public void deleteUser(UUID userId) {
         if (!userRepository.existsById(userId)) {
             throw new ResourceNotFoundException("User", userId);
@@ -74,6 +80,7 @@ public class UserService implements UserDetailsService {
                 .birthDate(user.getBirthDate())
                 .gender(user.getGender() != null ? user.getGender().name() : null)
                 .bio(user.getBio())
+                .avatarUrl(user.getAvatarUrl())
                 .build();
     }
 }

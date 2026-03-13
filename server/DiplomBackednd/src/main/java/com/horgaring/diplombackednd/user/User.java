@@ -55,6 +55,9 @@ public class User implements UserDetails {
     @Column(length = 500)
     private String bio;
 
+    @Column(name = "avatar_url")
+    private String avatarUrl;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default

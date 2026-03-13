@@ -28,6 +28,7 @@ public class RegisterRequest {
     @NotBlank
     private String firstName;
 
+    @NotBlank
     private String lastName;
 
     @NotNull

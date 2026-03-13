@@ -51,6 +51,9 @@ public class ChatController {
         String partnerLast = room.getUser1().getId().equals(user.getId())
                 ? room.getUser2().getLastName()
                 : room.getUser1().getLastName();
+        String partnerAvatar = room.getUser1().getId().equals(user.getId())
+                ? room.getUser2().getAvatarUrl()
+                : room.getUser1().getAvatarUrl();
 
         ChatRoomDto dto = ChatRoomDto.builder()
                 .chatRoomId(room.getId())
@@ -58,6 +61,7 @@ public class ChatController {
                 .partnerId(partnerId)
                 .partnerFirstName(partnerFirst)
                 .partnerLastName(partnerLast)
+                .partnerAvatarUrl(partnerAvatar)
                 .createdAt(room.getCreatedAt())
                 .build();
         return ResponseEntity.ok(dto);
