@@ -23,7 +23,15 @@ public interface UserRepository extends JpaRepository<User, UUID> {
               AND u.id NOT IN (
                   SELECT l.liked.id FROM UserLike l WHERE l.liker.id = :userId
               )
-            ORDER BY function('RANDOM')
+            ORDER BY
+              CASE
+                WHEN EXISTS (
+                    SELECT 1 FROM UserLike l2
+                    WHERE l2.liker.id = u.id AND l2.liked.id = :userId
+                ) THEN 0
+                ELSE 1
+              END,
+              function('RANDOM')
             """)
     List<User> findCandidates(@Param("userId") UUID userId, Pageable pageable);
 }

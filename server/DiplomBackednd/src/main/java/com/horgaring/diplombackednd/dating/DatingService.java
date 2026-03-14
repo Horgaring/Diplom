@@ -1,5 +1,6 @@
 package com.horgaring.diplombackednd.dating;
 
+import com.horgaring.diplombackednd.chat.ChatService;
 import com.horgaring.diplombackednd.exception.ResourceNotFoundException;
 import com.horgaring.diplombackednd.notification.NotificationService;
 import com.horgaring.diplombackednd.notification.NotificationType;
@@ -24,6 +25,7 @@ public class DatingService {
     private final UserRepository userRepository;
     private final LikeRepository likeRepository;
     private final MatchRepository matchRepository;
+    private final ChatService chatService;
     private final NotificationService notificationService;
 
     public List<UserCardDto> getCandidates(UUID currentUserId, Integer pageSize, Integer page) {
@@ -69,6 +71,8 @@ public class DatingService {
                     .build();
             matchRepository.save(match);
             log.info("Match created: matchId={}", match.getId());
+            chatService.getOrCreateChatRoom(match.getId());
+            log.info("Chat room created for matchId={}", match.getId());
 
             notificationService.createNotification(
                     currentUser,
