@@ -6,9 +6,15 @@ import com.horgaring.diplombackednd.user.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,6 +24,7 @@ import java.util.UUID;
 public class ChatController {
 
     private final ChatService chatService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @GetMapping("/rooms")
     public ResponseEntity<List<ChatRoomDto>> getMyChatRooms(@AuthenticationPrincipal User user) {
@@ -86,13 +93,15 @@ public class ChatController {
         return ResponseEntity.ok(chatService.getMessages(chatRoomId, user.getId(), page, size));
     }
 
-    @PostMapping("/rooms/{chatRoomId}/messages")
-    public ResponseEntity<MessageDto> sendMessage(
+    @MessageMapping("/chat/{chatRoomId}/messages")
+    public void processMessage(
             @AuthenticationPrincipal User user,
-            @PathVariable UUID chatRoomId,
-            @Valid @RequestBody SendMessageRequest request
-    ) {
-        return ResponseEntity.ok(chatService.sendMessage(chatRoomId, user, request));
+            @DestinationVariable UUID chatRoomId,
+            @Payload SendMessageRequest chatMessage) {
+
+        var message = chatService.sendMessage(chatRoomId, user, chatMessage);
+
+        messagingTemplate.convertAndSend("/topic/chat/" + chatRoomId, message);
     }
 
     @GetMapping("/messages/{messageId}")
