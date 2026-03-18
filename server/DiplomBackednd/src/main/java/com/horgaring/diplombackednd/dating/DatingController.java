@@ -18,8 +18,8 @@ public class DatingController {
 
     @GetMapping("/candidates")
     public ResponseEntity<List<UserCardDto>> getCandidates(@AuthenticationPrincipal User user,
-                                                           @RequestParam("page_size") Integer pageSize,
-                                                           @RequestParam("page_number") Integer pageNumber) {
+                                                           @RequestParam(value = "page_size", defaultValue = "10") Integer pageSize,
+                                                           @RequestParam(value = "page_number", defaultValue = "1") Integer pageNumber) {
         return ResponseEntity.ok(datingService.getCandidates(user.getId(), pageSize, pageNumber));
     }
 

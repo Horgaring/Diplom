@@ -1,4 +1,4 @@
-package com.horgaring.diplombackednd.chat;
+package com.horgaring.diplombackednd.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
