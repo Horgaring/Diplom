@@ -1,8 +1,9 @@
 spring:
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:5432/${DB_NAME:app}
-    username: ${DB_USER:user}
-    password: ${DB_PASS:password}
+    url: jdbc:postgresql://localhost:5432/diplomdb
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
     jpa:
       hibernate:
         ddl-auto: create

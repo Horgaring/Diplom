@@ -2,6 +2,7 @@ package com.horgaring.diplombackednd.auth;
 
 import com.horgaring.diplombackednd.exception.DuplicateResourceException;
 import com.horgaring.diplombackednd.exception.ResourceNotFoundException;
+import com.horgaring.diplombackednd.mail.EmailService;
 import com.horgaring.diplombackednd.security.JwtService;
 import com.horgaring.diplombackednd.user.Gender;
 import com.horgaring.diplombackednd.user.Role;
@@ -23,6 +24,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final EmailService emailService;
 
     public AuthResponse register(RegisterRequest request) {
         log.info("Registration attempt: email={}", request.getEmail());
@@ -38,9 +40,11 @@ public class AuthService {
                 .birthDate(request.getBirthDate())
                 .gender(request.getGender() != null ? Gender.valueOf(request.getGender()) : null)
                 .role(Role.USER)
+                .active(false)
                 .build();
 
         userRepository.save(user);
+        emailService.createAndSendMail(user.getEmail());
         log.info("User created: id={}, email={}, firstName={}", user.getId(), user.getEmail(), user.getFirstName());
 
         String token = jwtService.generateToken(user);

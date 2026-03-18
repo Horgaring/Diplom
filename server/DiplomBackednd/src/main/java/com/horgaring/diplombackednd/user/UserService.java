@@ -43,6 +43,18 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new ResourceNotFoundException("User", userId));
     }
 
+    public User getUserByEmail(String mail) {
+        return userRepository.findByEmail(mail)
+                .orElseThrow(() -> new ResourceNotFoundException("User", mail));
+    }
+
+    public User activate(String mail) {
+        var user = getUserByEmail(mail);
+        user.setActive(true);
+        userRepository.save(user);
+        return user;
+    }
+
     public UserProfileDto getUserProfile(UUID userId) {
         return toDto(getUserById(userId));
     }
