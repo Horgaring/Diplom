@@ -105,7 +105,7 @@ public class UserService implements UserDetailsService {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .birthDate(user.getBirthDate())
-                .gender(user.getGender() != null ? user.getGender().name() : null)
+                  .gender(user.getGender() != null ? user.getGender().name() : null)
                 .bio(user.getBio())
                 .avatarUrl(user.getAvatarUrl())
                 .build();

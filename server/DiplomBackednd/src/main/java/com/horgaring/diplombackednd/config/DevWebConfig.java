@@ -30,7 +30,7 @@ public class DevWebConfig implements WebMvcConfigurer {
         return args -> {
             repository.saveAll(List.of(
                     User.builder()
-                            .email("Anna@mail.ru")
+                            .email("Anna1@mail.ru")
                             .firstName("Anna")
                             .lastName("Armatova")
                             .gender(Gender.Female)
