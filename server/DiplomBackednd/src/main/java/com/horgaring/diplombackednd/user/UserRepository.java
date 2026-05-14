@@ -1,11 +1,13 @@
 package com.horgaring.diplombackednd.user;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -34,4 +36,18 @@ public interface UserRepository extends JpaRepository<User, UUID> {
               function('RANDOM')
             """)
     List<User> findCandidates(@Param("userId") UUID userId, Pageable pageable);
+
+    long countByCreatedAtAfter(Instant since);
+
+    @Query("""
+            SELECT u FROM User u
+            WHERE (:search IS NULL OR :search = '' OR
+                   u.email LIKE CONCAT('%', :search, '%') OR
+                   u.firstName LIKE CONCAT('%', :search, '%') OR
+                   u.lastName LIKE CONCAT('%', :search, '%'))
+              AND (:verified IS NULL OR u.verified = :verified)
+            """)
+    Page<User> findUsersAdmin(@Param("search") String search,
+                              @Param("verified") Boolean verified,
+                              Pageable pageable);
 }

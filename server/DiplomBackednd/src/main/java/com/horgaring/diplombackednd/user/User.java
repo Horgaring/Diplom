@@ -66,6 +66,10 @@ public class User implements UserDetails {
     @Builder.Default
     private Role role = Role.USER;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean verified = false;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = Instant.now();
