@@ -123,7 +123,7 @@ public class AdminService {
 
     public AdminStatsDto getStats() {
         long totalUsers = userRepository.count();
-        long activeUsers = userRepository.findAll().stream().filter(User::getActive).count();
+        long activeUsers = userRepository.findAll().stream().filter(u -> Boolean.TRUE.equals(u.getActive())).count();
         long verifiedUsers = userRepository.findAll().stream().filter(u -> Boolean.TRUE.equals(u.getVerified())).count();
         long bannedUsers = totalUsers - activeUsers;
         long totalMatches = matchRepository.count();
