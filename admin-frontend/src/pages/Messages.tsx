@@ -10,19 +10,19 @@ export default function Messages() {
   }, [page])
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this message?')) return
+    if (!confirm('Удалить это сообщение?')) return
     await deleteMessage(id)
     getMessages(page, 20).then(setData)
   }
 
   return (
     <div>
-      <h1>Messages</h1>
+      <h1>Сообщения</h1>
 
       <table>
         <thead>
           <tr>
-            <th>Sender</th><th>Content</th><th>Sent</th><th>Read</th><th>Actions</th>
+            <th>Отправитель</th><th>Текст</th><th>Отправлено</th><th>Прочитано</th><th>Действия</th>
           </tr>
         </thead>
         <tbody>
@@ -31,9 +31,9 @@ export default function Messages() {
               <td>{m.senderFirstName}</td>
               <td>{m.content}</td>
               <td>{new Date(m.createdAt).toLocaleString()}</td>
-              <td>{m.read ? 'Yes' : 'No'}</td>
+              <td>{m.read ? 'Да' : 'Нет'}</td>
               <td>
-                <button className="btn btn-sm btn-danger" onClick={() => handleDelete(m.id)}>Delete</button>
+                <button className="btn btn-sm btn-danger" onClick={() => handleDelete(m.id)}>Удалить</button>
               </td>
             </tr>
           ))}
@@ -42,9 +42,9 @@ export default function Messages() {
 
       {data && (
         <div className="pagination">
-          <button className="btn btn-sm" disabled={page <= 0} onClick={() => setPage(p => p - 1)}>← Prev</button>
-          <span style={{ padding: '0.4rem 0.8rem' }}>Page {data.number + 1} / {data.totalPages}</span>
-          <button className="btn btn-sm" disabled={page >= data.totalPages - 1} onClick={() => setPage(p => p + 1)}>Next →</button>
+          <button className="btn btn-sm" disabled={page <= 0} onClick={() => setPage(p => p - 1)}>← Назад</button>
+          <span style={{ padding: '0.4rem 0.8rem' }}>Страница {data.number + 1} / {data.totalPages}</span>
+          <button className="btn btn-sm" disabled={page >= data.totalPages - 1} onClick={() => setPage(p => p + 1)}>Далее →</button>
         </div>
       )}
     </div>

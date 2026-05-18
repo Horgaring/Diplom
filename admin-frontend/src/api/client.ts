@@ -5,6 +5,7 @@ function getToken(): string | null {
 }
 
 export function setToken(token: string) {
+  if (!token || token === 'undefined') return
   localStorage.setItem('admin_token', token)
 }
 
@@ -22,7 +23,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     'Content-Type': 'application/json',
     ...(options.headers as Record<string, string>),
   }
-  if (token) {
+  if (token && token !== 'undefined') {
     headers['Authorization'] = `Bearer ${token}`
   }
 
@@ -32,6 +33,15 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     clearToken()
     window.location.href = '/admin/login'
     throw new Error('Unauthorized')
+  }
+
+  if (!res.ok) {
+    const contentType = res.headers.get('content-type')
+    if (contentType?.includes('application/json')) {
+      const err = await res.json()
+      throw new Error(err.message || `Request failed with status ${res.status}`)
+    }
+    throw new Error(`Request failed with status ${res.status}`)
   }
 
   const contentType = res.headers.get('content-type')
@@ -91,7 +101,18 @@ export interface AdminUser {
   bio: string | null
   avatarUrl: string | null
   cityName: string | null
+  cityId: string | null
   createdAt: string
+}
+
+export interface UpdateProfileData {
+  firstName?: string
+  lastName?: string
+  bio?: string | null
+  gender?: string | null
+  birthDate?: string | null
+  cityId?: string | null
+  avatarUrl?: string | null
 }
 
 export interface PageResponse<T> {
@@ -138,6 +159,13 @@ export function verifyUser(userId: string, verified: boolean): Promise<AdminUser
   return request<AdminUser>(`/admin/users/${userId}/verify`, {
     method: 'PUT',
     body: JSON.stringify({ verified }),
+  })
+}
+
+export function updateUserProfile(userId: string, data: UpdateProfileData): Promise<AdminUser> {
+  return request<AdminUser>(`/admin/users/${userId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
   })
 }
 

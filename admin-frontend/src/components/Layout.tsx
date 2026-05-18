@@ -12,22 +12,22 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="layout">
       <div className="sidebar">
-        <h2>Admin Panel</h2>
+        <h2>Панель администратора</h2>
         <nav>
           <NavLink to="/admin/dashboard" className={({ isActive }) => isActive ? 'active' : ''}>
-            Dashboard
+            Панель управления
           </NavLink>
           <NavLink to="/admin/users" className={({ isActive }) => isActive ? 'active' : ''}>
-            Users
+            Пользователи
           </NavLink>
           <NavLink to="/admin/messages" className={({ isActive }) => isActive ? 'active' : ''}>
-            Messages
+            Сообщения
           </NavLink>
           <NavLink to="/admin/cities" className={({ isActive }) => isActive ? 'active' : ''}>
-            Cities
+            Города
           </NavLink>
         </nav>
-        <button className="logout-btn" onClick={handleLogout}>Logout</button>
+        <button className="logout-btn" onClick={handleLogout}>Выйти</button>
       </div>
       <div className="main-content">
         {children}

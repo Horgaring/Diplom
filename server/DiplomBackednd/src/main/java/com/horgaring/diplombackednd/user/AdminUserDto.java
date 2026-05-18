@@ -25,6 +25,7 @@ public class AdminUserDto {
     private LocalDate birthDate;
     private String bio;
     private String avatarUrl;
+    private UUID cityId;
     private String cityName;
     private Instant createdAt;
 }

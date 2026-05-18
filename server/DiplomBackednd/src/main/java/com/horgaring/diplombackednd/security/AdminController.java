@@ -59,6 +59,14 @@ public class AdminController {
         return ResponseEntity.ok(adminService.toAdminDto(user));
     }
 
+    @PatchMapping("/users/{userId}")
+    public ResponseEntity<AdminUserDto> updateUserProfile(
+            @PathVariable UUID userId,
+            @RequestBody AdminUpdateRequest request) {
+        User user = adminService.updateUserProfile(userId, request);
+        return ResponseEntity.ok(adminService.toAdminDto(user));
+    }
+
     @DeleteMapping("/users/{userId}")
     public ResponseEntity<Void> deleteUser(@PathVariable UUID userId) {
         adminService.deleteUser(userId);

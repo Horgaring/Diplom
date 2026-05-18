@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { login, setToken } from '../api/client'
+import { login, setToken, clearToken } from '../api/client'
 
 export default function Login() {
   const [email, setEmail] = useState('admin@admin.com')
@@ -8,22 +8,25 @@ export default function Login() {
   const [error, setError] = useState('')
   const navigate = useNavigate()
 
+  useEffect(() => { clearToken() }, [])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
     try {
       const res = await login({ email, password })
+      console.log(res)
       setToken(res.token)
       navigate('/admin/dashboard')
-    } catch {
-      setError('Invalid email or password')
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Неизвестная ошибка')
     }
   }
 
   return (
     <div className="login-page">
       <div className="login-card">
-        <h1>Admin Panel</h1>
+        <h1>Панель администратора</h1>
         {error && <div className="error-msg">{error}</div>}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -36,7 +39,7 @@ export default function Login() {
             />
           </div>
           <div className="form-group">
-            <label>Password</label>
+            <label>Пароль</label>
             <input
               type="password"
               value={password}
@@ -44,7 +47,7 @@ export default function Login() {
               required
             />
           </div>
-          <button type="submit" className="btn btn-primary">Sign In</button>
+          <button type="submit" className="btn btn-primary">Войти</button>
         </form>
       </div>
     </div>

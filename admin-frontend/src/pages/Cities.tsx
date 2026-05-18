@@ -33,7 +33,7 @@ export default function Cities() {
   }
 
   const handleDelete = async (id: string, name: string) => {
-    if (!confirm(`Delete city '${name}'?`)) return
+    if (!confirm(`Удалить город «${name}»?`)) return
     await deleteCity(id)
     getCities().then(setCities)
   }
@@ -41,21 +41,21 @@ export default function Cities() {
   return (
     <div>
       <div className="page-header">
-        <h1>Cities</h1>
-        <button className="btn btn-primary" style={{ width: 'auto' }} onClick={openCreate}>+ Add City</button>
+        <h1>Города</h1>
+        <button className="btn btn-primary" style={{ width: 'auto' }} onClick={openCreate}>+ Добавить город</button>
       </div>
 
       <table>
         <thead>
-          <tr><th>Name</th><th>Actions</th></tr>
+          <tr><th>Название</th><th>Действия</th></tr>
         </thead>
         <tbody>
           {cities.map(c => (
             <tr key={c.id}>
               <td>{c.name}</td>
               <td>
-                <button className="btn btn-sm btn-primary" onClick={() => openEdit(c)} style={{ marginRight: '0.5rem' }}>Edit</button>
-                <button className="btn btn-sm btn-danger" onClick={() => handleDelete(c.id, c.name)}>Delete</button>
+                <button className="btn btn-sm btn-primary" onClick={() => openEdit(c)} style={{ marginRight: '0.5rem' }}>Редактировать</button>
+                <button className="btn btn-sm btn-danger" onClick={() => handleDelete(c.id, c.name)}>Удалить</button>
               </td>
             </tr>
           ))}
@@ -65,14 +65,14 @@ export default function Cities() {
       {showDialog && (
         <div className="dialog-overlay" onClick={() => setShowDialog(false)}>
           <div className="dialog" onClick={e => e.stopPropagation()}>
-            <h3>{editCity ? 'Edit City' : 'Add City'}</h3>
+            <h3>{editCity ? 'Редактировать город' : 'Добавить город'}</h3>
             <div className="form-group">
-              <label>City Name</label>
+              <label>Название города</label>
               <input value={editName} onChange={e => setEditName(e.target.value)} autoFocus />
             </div>
             <div className="dialog-actions">
-              <button className="btn btn-sm" onClick={() => setShowDialog(false)}>Cancel</button>
-              <button className="btn btn-sm btn-primary" onClick={handleSave}>Save</button>
+              <button className="btn btn-sm" onClick={() => setShowDialog(false)}>Отмена</button>
+              <button className="btn btn-sm btn-primary" onClick={handleSave}>Сохранить</button>
             </div>
           </div>
         </div>

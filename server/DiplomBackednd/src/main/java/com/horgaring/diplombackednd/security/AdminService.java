@@ -66,6 +66,24 @@ public class AdminService {
         return userRepository.save(user);
     }
 
+    @Transactional
+    public User updateUserProfile(UUID userId, AdminUpdateRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", userId));
+        if (request.getFirstName() != null) user.setFirstName(request.getFirstName());
+        if (request.getLastName() != null) user.setLastName(request.getLastName());
+        if (request.getBio() != null) user.setBio(request.getBio());
+        if (request.getGender() != null) user.setGender(Gender.valueOf(request.getGender()));
+        if (request.getBirthDate() != null) user.setBirthDate(request.getBirthDate());
+        if (request.getAvatarUrl() != null) user.setAvatarUrl(request.getAvatarUrl());
+        if (request.getCityId() != null) {
+            City city = cityRepository.findById(request.getCityId())
+                    .orElseThrow(() -> new ResourceNotFoundException("City", request.getCityId()));
+            user.setHomeTown(city);
+        }
+        return userRepository.save(user);
+    }
+
     public void deleteUser(UUID userId) {
         if (!userRepository.existsById(userId)) {
             throw new ResourceNotFoundException("User", userId);
@@ -183,6 +201,7 @@ public class AdminService {
                 .birthDate(user.getBirthDate())
                 .bio(user.getBio())
                 .avatarUrl(user.getAvatarUrl())
+                .cityId(user.getHomeTown() != null ? user.getHomeTown().getId() : null)
                 .cityName(user.getHomeTown() != null ? user.getHomeTown().getName() : null)
                 .createdAt(user.getCreatedAt())
                 .build();
