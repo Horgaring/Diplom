@@ -1,5 +1,7 @@
 package com.horgaring.diplombackednd.config;
 
+import com.horgaring.diplombackednd.user.City;
+import com.horgaring.diplombackednd.user.CityRepository;
 import com.horgaring.diplombackednd.user.Gender;
 import com.horgaring.diplombackednd.user.Role;
 import com.horgaring.diplombackednd.user.User;
@@ -28,64 +30,111 @@ public class DevWebConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public CommandLineRunner loadData(UserRepository repository, PasswordEncoder passwordEncoder) {
+    public CommandLineRunner loadData(UserRepository userRepository, CityRepository cityRepository, PasswordEncoder passwordEncoder) {
         return args -> {
+            if (userRepository.count() > 0) return;
+
+            City moscow = new City();
+            moscow.setName("Москва");
+            City spb = new City();
+            spb.setName("Санкт-Петербург");
+            City kazan = new City();
+            kazan.setName("Казань");
+            cityRepository.saveAll(List.of(moscow, spb, kazan));
+
             var pw = passwordEncoder.encode("secretpassword1");
+            var testPw = passwordEncoder.encode("test123");
             var adminPw = passwordEncoder.encode("admin123");
-            repository.saveAll(List.of(
+            userRepository.saveAll(List.of(
+                    User.builder()
+                            .email("test@test.com")
+                            .firstName("Тест")
+                            .lastName("Тестовый")
+                            .gender(Gender.Male)
+                            .password(testPw)
+                            .birthDate(LocalDate.of(2000, 6, 15))
+                            .bio("Люблю путешествовать и пробовать новую еду. Ищу собеседника для прогулок по городу.")
+                            .homeTown(moscow)
+                            .active(true)
+                            .verified(true)
+                            .build(),
                     User.builder()
                             .email("Anna1@mail.ru")
-                            .firstName("Anna")
-                            .lastName("Armatova")
+                            .firstName("Анна")
+                            .lastName("Арматова")
                             .gender(Gender.Female)
                             .password(pw)
                             .avatarUrl("/Untitled1.jpg")
                             .birthDate(LocalDate.of(2008, 3, 28))
+                            .bio("Творческая натура. Рисую, пою, танцую. Мечтаю посетить Японию.")
+                            .homeTown(moscow)
+                            .active(true)
+                            .verified(true)
                             .build(),
                     User.builder()
                             .email("Sveta@mail.ru")
-                            .firstName("Sveta")
-                            .lastName("Limonova")
+                            .firstName("Света")
+                            .lastName("Лимонова")
                             .gender(Gender.Female)
                             .password(pw)
                             .avatarUrl("/Untitled2.jpg")
                             .birthDate(LocalDate.of(2006, 2, 20))
+                            .bio("Кофеман и книголюб. Обожаю долгие прогулки и разговоры по душам.")
+                            .homeTown(spb)
+                            .active(true)
+                            .verified(true)
                             .build(),
                     User.builder()
                             .email("Olga@mail.ru")
-                            .firstName("Olga")
-                            .lastName("Varikoznaya")
+                            .firstName("Ольга")
+                            .lastName("Козенная")
                             .gender(Gender.Female)
                             .password(pw)
                             .birthDate(LocalDate.of(2006, 8, 12))
                             .avatarUrl("/Untitled3.jpg")
+                            .bio("Спортсменка и оптимистка. Бегаю по утрам, люблю йогу и здоровое питание.")
+                            .homeTown(kazan)
+                            .active(true)
+                            .verified(true)
                             .build(),
                     User.builder()
                             .email("Gulnara@mail.ru")
-                            .firstName("Gulnara")
-                            .lastName("Frogova")
+                            .firstName("Гульнара")
+                            .lastName("Фрогова")
                             .gender(Gender.Female)
                             .password(pw)
                             .avatarUrl("/Untitled4.jpg")
                             .birthDate(LocalDate.of(2008, 3, 12))
+                            .bio("Фотограф-любитель. Лучшие кадры получаются на закате. Ищу единомышленника.")
+                            .homeTown(moscow)
+                            .active(true)
+                            .verified(true)
                             .build(),
                     User.builder()
                             .email("Anna2@mail.ru")
-                            .firstName("Tamila")
-                            .lastName("Sokolova")
+                            .firstName("Тамила")
+                            .lastName("Соколова")
                             .gender(Gender.Female)
                             .password(pw)
                             .avatarUrl("/Untitled5.jpg")
                             .birthDate(LocalDate.of(2007, 1, 16))
+                            .bio("Учусь на дизайнера. Обожаю моду и красивые места для фото.")
+                            .homeTown(spb)
+                            .active(true)
+                            .verified(true)
                             .build(),
                     User.builder()
                             .email("Dima@mail.ru")
-                            .firstName("Dima")
-                            .lastName("Buka")
+                            .firstName("Дима")
+                            .lastName("Стульчиков")
                             .gender(Gender.Male)
                             .password(pw)
                             .avatarUrl("/Untitled5.jpg")
                             .birthDate(LocalDate.of(2006, 4, 28))
+                            .bio("Геймер и программист. Ищу девушку, которая разделит мои увлечения.")
+                            .homeTown(kazan)
+                            .active(true)
+                            .verified(true)
                             .build(),
                     User.builder()
                             .email("admin@admin.com")
