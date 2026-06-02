@@ -1,12 +1,10 @@
 package com.horgaring.diplombackednd.config;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
-import tools.jackson.databind.json.JsonMapper;
 
 
 @Configuration
@@ -25,12 +23,5 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .addEndpoint("/ws")
                 .setAllowedOrigins("*")
                 .withSockJS();
-    }
-
-    @Bean
-    public JsonMapper jsonMapper() {
-        return JsonMapper.builder()
-                .findAndAddModules()
-                .build();
     }
 }

@@ -21,4 +21,6 @@ public interface MessageRepository extends JpaRepository<Message, UUID> {
     @Modifying
     @Query("UPDATE Message m SET m.read = true WHERE m.chatRoom.id = :chatRoomId AND m.sender.id <> :userId AND m.read = false")
     void markAllAsRead(@Param("chatRoomId") UUID chatRoomId, @Param("userId") UUID userId);
+
+    Page<Message> findAllByOrderByCreatedAtDesc(Pageable pageable);
 }

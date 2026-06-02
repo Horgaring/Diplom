@@ -53,10 +53,10 @@ fun LoginScreen(navController: NavController) {
                         birthDateText = date.format(DateTimeFormatter.ISO_LOCAL_DATE)
                     }
                     showDatePicker = false
-                }) { Text("OK") }
+                }) { Text("ОК") }
             },
             dismissButton = {
-                TextButton(onClick = { showDatePicker = false }) { Text("Cancel") }
+                TextButton(onClick = { showDatePicker = false }) { Text("Отмена") }
             }
         ) {
             DatePicker(state = datePickerState)
@@ -78,7 +78,7 @@ fun LoginScreen(navController: NavController) {
         )
 
         Text(
-            text = if (isSignUp) "Create Account" else "Sign In",
+            text = if (isSignUp) "Создать аккаунт" else "Зарегистрироваться",
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(bottom = 24.dp)
         )
@@ -87,7 +87,7 @@ fun LoginScreen(navController: NavController) {
             OutlinedTextField(
                 value = firstName,
                 onValueChange = { firstName = it },
-                label = { Text("First Name") },
+                label = { Text("Имя") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp),
@@ -106,7 +106,7 @@ fun LoginScreen(navController: NavController) {
             OutlinedTextField(
                 value = lastName,
                 onValueChange = { lastName = it },
-                label = { Text("Last Name") },
+                label = { Text("Фамилия") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp),
@@ -125,7 +125,7 @@ fun LoginScreen(navController: NavController) {
             OutlinedTextField(
                 value = birthDateText,
                 onValueChange = {},
-                label = { Text("Birth Date") },
+                label = { Text("Дата рождения") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp),
@@ -154,15 +154,15 @@ fun LoginScreen(navController: NavController) {
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 FilterChip(
-                    selected = selectedGender == "Male",
-                    onClick = { selectedGender = if (selectedGender == "Male") null else "Male" },
-                    label = { Text("Male") },
+                    selected = selectedGender == "Муж",
+                    onClick = { selectedGender = if (selectedGender == "Муж") null else "Муж" },
+                    label = { Text("Муж") },
                     modifier = Modifier.weight(1f)
                 )
                 FilterChip(
-                    selected = selectedGender == "Female",
-                    onClick = { selectedGender = if (selectedGender == "Female") null else "Female" },
-                    label = { Text("Female") },
+                    selected = selectedGender == "Жен",
+                    onClick = { selectedGender = if (selectedGender == "Жен") null else "Жен" },
+                    label = { Text("Жен") },
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -180,7 +180,7 @@ fun LoginScreen(navController: NavController) {
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("Email") },
+            label = { Text("Почта") },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp),
@@ -200,7 +200,7 @@ fun LoginScreen(navController: NavController) {
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Password") },
+            label = { Text("Пароль") },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 8.dp),
@@ -243,7 +243,7 @@ fun LoginScreen(navController: NavController) {
                     try {
                         if (isSignUp) {
                             if (selectedGender.isNullOrBlank()) {
-                                genderErrorMessage = "select a gender"
+                                genderErrorMessage = "Выберите пол"
                                 isLoading = false
                                 return@launch
                             }
@@ -279,7 +279,7 @@ fun LoginScreen(navController: NavController) {
                             generalErrorMessage = unmapped.joinToString("\n")
                         }
                     } catch (e: Exception) {
-                        generalErrorMessage = "Something went wrong. Check server connection and try again."
+                        generalErrorMessage = "Что-то пошло не так. Проверьте подключение к серверу и попробуйте снова."
                     } finally {
                         isLoading = false
                     }
@@ -297,7 +297,7 @@ fun LoginScreen(navController: NavController) {
                     strokeWidth = 2.dp
                 )
             } else {
-                Text(if (isSignUp) "Sign Up" else "Sign In")
+                Text(if (isSignUp) "Зарегистрироваться" else "Войти")
             }
         }
 
@@ -306,7 +306,7 @@ fun LoginScreen(navController: NavController) {
                 isSignUp = !isSignUp
             }
         ) {
-            Text(if (isSignUp) "Already have an account? Sign In" else "Don't have an account? Sign Up")
+            Text(if (isSignUp) "Уже есть аккаунт? Войти" else "Нет аккаунта? Зарегистрироваться")
         }
     }
 }

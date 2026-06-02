@@ -29,7 +29,7 @@ public class AuthService {
     public AuthResponse register(RegisterRequest request) {
         log.info("Registration attempt: email={}", request.getEmail());
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new DuplicateResourceException("User", "email", request.getEmail());
+            throw new DuplicateResourceException("Пользователь", "email", request.getEmail());
         }
 
         User user = User.builder()
@@ -68,7 +68,7 @@ public class AuthService {
         );
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new ResourceNotFoundException("User", request.getEmail()));
+                .orElseThrow(() -> new ResourceNotFoundException("Пользователь", request.getEmail()));
 
         String token = jwtService.generateToken(user);
         log.info("Login successful: id={}, email={}", user.getId(), user.getEmail());

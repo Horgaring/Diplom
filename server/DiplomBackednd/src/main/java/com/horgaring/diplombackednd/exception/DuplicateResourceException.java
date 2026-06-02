@@ -9,6 +9,6 @@ public class DuplicateResourceException extends AppException {
     }
 
     public DuplicateResourceException(String resource, String field, Object value) {
-        super(resource + " with " + field + " '" + value + "' already exists", HttpStatus.CONFLICT);
+        super(resource + " с " + field + " '" + value + "' уже существует", HttpStatus.CONFLICT);
     }
 }
