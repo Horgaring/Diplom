@@ -29,6 +29,7 @@ import androidx.navigation.NavController
 import com.horgaring.dateapp.data.ChatConversation
 import com.horgaring.dateapp.data.Match
 import com.horgaring.dateapp.ui.components.AvatarImage
+import com.horgaring.dateapp.ui.util.DateFormatter
 import com.horgaring.dateapp.ui.viewmodel.ChatViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -67,15 +68,15 @@ fun ChatScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Назад")
                     }
                     Text(
-                        text = "Messages",
+                        text = "Сообщения",
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold
                     )
                     IconButton(onClick = { navController.navigate("swipe") }) {
-                        Icon(Icons.Default.Explore, contentDescription = "Discover")
+                        Icon(Icons.Default.Explore, contentDescription = "Поиск")
                     }
                 }
 
@@ -84,7 +85,7 @@ fun ChatScreen(
                 // New matches horizontal row
                 if (conversations.isNotEmpty()) {
                     Text(
-                        text = "New Matches",
+                        text = "Новые совпадения",
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.primary,
@@ -130,12 +131,12 @@ fun ChatScreen(
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        text = "No conversations yet",
+                        text = "Нет чатов",
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                     )
                     Text(
-                        text = "Start swiping to find your match!",
+                        text = "Листайте анкеты, чтобы найти свою пару!",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
                     )
@@ -224,13 +225,7 @@ fun ConversationCard(
     onClick: () -> Unit
 ) {
     val timeText = remember(conversation.lastMessageTime) {
-        val diff = System.currentTimeMillis() - conversation.lastMessageTime
-        when {
-            diff < 60_000 -> "now"
-            diff < 3_600_000 -> "${diff / 60_000}m"
-            diff < 86_400_000 -> "${diff / 3_600_000}h"
-            else -> "${diff / 86_400_000}d"
-        }
+        DateFormatter.formatRelativeTime(conversation.lastMessageTime)
     }
 
     Card(
@@ -238,9 +233,7 @@ fun ConversationCard(
         onClick = onClick,
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (conversation.unreadCount > 0)
-                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.15f)
-            else MaterialTheme.colorScheme.surface
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(
             defaultElevation = if (conversation.unreadCount > 0) 2.dp else 0.dp

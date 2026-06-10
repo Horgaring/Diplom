@@ -72,7 +72,7 @@ fun SwipeScreen(
                     IconButton(onClick = { navController.navigate("profile") }) {
                         Icon(
                             Icons.Default.Person,
-                            contentDescription = "Profile",
+                            contentDescription = "Профиль",
                             tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
@@ -85,7 +85,7 @@ fun SwipeScreen(
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = "Discover",
+                            text = "Поиск",
                             style = MaterialTheme.typography.headlineMedium,
                             fontWeight = FontWeight.Bold
                         )
@@ -102,7 +102,7 @@ fun SwipeScreen(
                         ) {
                             Icon(
                                 Icons.Default.Chat,
-                                contentDescription = "Chat",
+                                contentDescription = "Чаты",
                                 tint = MaterialTheme.colorScheme.onSurface
                             )
                         }
@@ -149,13 +149,13 @@ fun SwipeScreen(
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = "No more profiles!",
+                            text = "Анкеты закончились!",
                             style = MaterialTheme.typography.headlineSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "Check back later for new people",
+                            text = "Загляните позже — появятся новые люди",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
                         )
@@ -163,7 +163,7 @@ fun SwipeScreen(
                         OutlinedButton(onClick = { swipeViewModel.loadProfiles() }) {
                             Icon(Icons.Default.Refresh, contentDescription = null)
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("Refresh")
+                            Text("Обновить")
                         }
                     }
                 }
@@ -188,7 +188,7 @@ fun SwipeScreen(
                     ) {
                         Icon(
                             Icons.Default.Close,
-                            contentDescription = "Pass",
+                            contentDescription = "Пропустить",
                             tint = Color(0xFFEF5350),
                             modifier = Modifier.size(32.dp)
                         )
@@ -203,7 +203,7 @@ fun SwipeScreen(
                     ) {
                         Icon(
                             Icons.Default.Favorite,
-                            contentDescription = "Like",
+                            contentDescription = "Нравится",
                             tint = Color(0xFF66BB6A),
                             modifier = Modifier.size(32.dp)
                         )
@@ -314,7 +314,7 @@ fun SwipeableProfileCard(
                 color = Color(0xFF66BB6A).copy(alpha = 0.9f)
             ) {
                 Text(
-                    text = "LIKE",
+                    text = "НРАВИТСЯ",
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                     color = Color.White,
                     fontWeight = FontWeight.ExtraBold,
@@ -337,7 +337,7 @@ fun SwipeableProfileCard(
                 color = Color(0xFFEF5350).copy(alpha = 0.9f)
             ) {
                 Text(
-                    text = "NOPE",
+                    text = "НЕТ",
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                     color = Color.White,
                     fontWeight = FontWeight.ExtraBold,
@@ -362,111 +362,140 @@ fun ProfileCard(
         shape = RoundedCornerShape(20.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.surface)
-            ) {
-                // Photo area
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                        .background(
-                            Brush.verticalGradient(
-                                colors = listOf(
-                                    MaterialTheme.colorScheme.primaryContainer,
-                                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)
-                                )
-                            )
-                        )
-                ) {
-                    if (!profile.imageUrl.isNullOrBlank()) {
-                        AsyncImage(
-                            model = profile.imageUrl,
-                            contentDescription = "${profile.name} photo",
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
-                        )
-                    } else {
-                        Icon(
-                            Icons.Default.Person,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(120.dp)
-                                .align(Alignment.Center),
-                            tint = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.6f)
-                        )
-                    }
-
-                    // Bottom gradient overlay for text readability
+            Column(modifier = Modifier.fillMaxSize()) {
+                if (!profile.imageUrl.isNullOrBlank()) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(100.dp)
-                            .align(Alignment.BottomCenter)
+                            .weight(1f)
+                    ) {
+                        AsyncImage(
+                            model = profile.imageUrl,
+                            contentDescription = "Фото ${profile.name}",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp)
+                                .align(Alignment.BottomCenter)
+                                .background(
+                                    Brush.verticalGradient(
+                                        colors = listOf(
+                                            Color.Transparent,
+                                            Color.Black.copy(alpha = 0.8f)
+                                        )
+                                    )
+                                )
+                        )
+
+                        Column(
+                            modifier = Modifier
+                                .align(Alignment.BottomStart)
+                                .padding(horizontal = 20.dp, vertical = 20.dp)
+                        ) {
+                            Row(verticalAlignment = Alignment.Bottom) {
+                                Text(
+                                    text = profile.name,
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "${profile.age}",
+                                    style = MaterialTheme.typography.headlineSmall,
+                                    color = Color.White.copy(alpha = 0.9f)
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    Icons.Default.LocationOn,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp),
+                                    tint = Color.White.copy(alpha = 0.8f)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = profile.location,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color.White.copy(alpha = 0.8f)
+                                )
+                            }
+                        }
+                    }
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
                             .background(
                                 Brush.verticalGradient(
                                     colors = listOf(
-                                        Color.Transparent,
-                                        MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
+                                        MaterialTheme.colorScheme.primaryContainer,
+                                        MaterialTheme.colorScheme.primary
                                     )
                                 )
-                            )
-                    )
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            Icons.Default.Person,
+                            contentDescription = null,
+                            modifier = Modifier.size(120.dp),
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.6f)
+                        )
+                    }
                 }
 
-                // Info section
+                // Bio + interests section
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 16.dp)
+                        .background(MaterialTheme.colorScheme.surface)
+                        .padding(horizontal = 20.dp, vertical = 14.dp)
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.Bottom
-                    ) {
-                        Row(verticalAlignment = Alignment.Bottom) {
-                            Text(
-                                text = profile.name,
-                                style = MaterialTheme.typography.headlineMedium,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = "${profile.age}",
-                                style = MaterialTheme.typography.headlineSmall,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                            )
+                    if (profile.bio.isNotBlank()) {
+                        Text(
+                            text = profile.bio,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+                        )
+                    }
+
+                    if (profile.interests.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            profile.interests.take(3).forEach { interest ->
+                                Surface(
+                                    shape = RoundedCornerShape(20.dp),
+                                    color = MaterialTheme.colorScheme.primaryContainer
+                                ) {
+                                    Text(
+                                        text = interest,
+                                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                }
+                            }
+                            if (profile.interests.size > 3) {
+                                Text(
+                                    text = "+${profile.interests.size - 3}",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.align(Alignment.CenterVertically)
+                                )
+                            }
                         }
                     }
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            Icons.Default.LocationOn,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = profile.location,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    Text(
-                        text = profile.bio,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
-                    )
-
                 }
             }
         }
@@ -537,7 +566,7 @@ fun MatchOverlay(
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "It's a Match!",
+                text = "Это взаимно!",
                 style = MaterialTheme.typography.displaySmall,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
@@ -547,7 +576,7 @@ fun MatchOverlay(
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = "You and $matchedUserName liked each other",
+                text = "Вы и $matchedUserName понравились друг другу",
                 style = MaterialTheme.typography.bodyLarge,
                 color = Color.White.copy(alpha = 0.9f),
                 textAlign = TextAlign.Center,
@@ -576,7 +605,7 @@ fun MatchOverlay(
                     Icon(Icons.Default.Send, contentDescription = null, modifier = Modifier.size(20.dp))
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        "Send Message",
+                        "Написать сообщение",
                         fontWeight = FontWeight.Bold,
                         fontSize = 15.sp
                     )
@@ -598,7 +627,7 @@ fun MatchOverlay(
                     shape = RoundedCornerShape(26.dp)
                 ) {
                     Text(
-                        "Keep Swiping",
+                        "Продолжить",
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 15.sp
                     )

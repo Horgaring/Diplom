@@ -48,7 +48,7 @@ fun DatingAppNavigation() {
     val navController = rememberNavController()
     val chatViewModel: ChatViewModel = viewModel()
 
-    val startDest = if (TokenManager.isLoggedIn) "swipe" else "login"
+    val startDest = "swipe"
 
     NavHost(
         navController = navController,

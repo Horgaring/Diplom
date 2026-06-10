@@ -22,11 +22,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.horgaring.dateapp.data.Message
 import com.horgaring.dateapp.ui.components.AvatarImage
+import com.horgaring.dateapp.ui.util.DateFormatter
 import com.horgaring.dateapp.ui.viewmodel.ChatViewModel
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,7 +68,7 @@ fun ConversationScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = { navController.navigateUp() }) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Назад")
                 }
 
                 AvatarImage(
@@ -83,7 +81,7 @@ fun ConversationScreen(
 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = conversation?.match?.user?.name ?: "Chat",
+                        text = conversation?.match?.user?.name ?: "Чат",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
@@ -123,7 +121,7 @@ fun ConversationScreen(
                     value = messageText,
                     onValueChange = { messageText = it },
                     modifier = Modifier.weight(1f),
-                    placeholder = { Text("Type a message...") },
+                    placeholder = { Text("Напишите сообщение...") },
                     shape = RoundedCornerShape(24.dp),
                     maxLines = 4,
                     colors = OutlinedTextFieldDefaults.colors(
@@ -153,7 +151,7 @@ fun ConversationScreen(
                 ) {
                     Icon(
                         Icons.Default.Send,
-                        contentDescription = "Send",
+                        contentDescription = "Отправить",
                         tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }
@@ -165,18 +163,8 @@ fun ConversationScreen(
 @Composable
 fun MessageBubble(message: Message) {
     val isFromMe = message.isFromMe
-    val bubbleColor = if (isFromMe) {
-        MaterialTheme.colorScheme.primary
-    } else {
-        MaterialTheme.colorScheme.surfaceVariant
-    }
-    val textColor = if (isFromMe) {
-        MaterialTheme.colorScheme.onPrimary
-    } else {
-        MaterialTheme.colorScheme.onSurfaceVariant
-    }
-
-    val timeFormat = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
+    val bubbleColor = MaterialTheme.colorScheme.primary
+    val textColor = MaterialTheme.colorScheme.onPrimary
 
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -192,8 +180,7 @@ fun MessageBubble(message: Message) {
                 bottomStart = if (isFromMe) 16.dp else 4.dp,
                 bottomEnd = if (isFromMe) 4.dp else 16.dp
             ),
-            color = bubbleColor,
-            shadowElevation = 1.dp
+            color = bubbleColor
         ) {
             Column(
                 modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
@@ -205,7 +192,7 @@ fun MessageBubble(message: Message) {
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = timeFormat.format(Date(message.timestamp)),
+                    text = DateFormatter.formatMessageTime(message.timestamp),
                     color = textColor.copy(alpha = 0.6f),
                     fontSize = 11.sp,
                     modifier = Modifier.align(Alignment.End)

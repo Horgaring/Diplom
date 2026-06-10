@@ -3,6 +3,7 @@ package com.horgaring.dateapp.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.horgaring.dateapp.data.Match
+import com.horgaring.dateapp.data.MockData
 import com.horgaring.dateapp.data.UserProfile
 import com.horgaring.dateapp.data.repository.DateAppRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -99,7 +100,11 @@ class SwipeViewModel : ViewModel() {
 
         _isLoading.value = true
         val page = repository.getProfiles(pageSize = pageSize, pageNumber = nextPageNumber)
-        if (page.isEmpty()) {
+
+        if (page.isEmpty() && nextPageNumber == 0) {
+            _profiles.value = MockData.profiles
+            hasMorePages = false
+        } else if (page.isEmpty()) {
             hasMorePages = false
         } else {
             _profiles.value = _profiles.value + page

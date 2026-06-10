@@ -130,7 +130,7 @@ public class DatingService {
                 .birthDate(user.getBirthDate())
                 .gender(user.getGender() != null ? user.getGender().name() : null)
                 .bio(user.getBio())
-                .city(user.getHomeTown() != null ? user.getHomeTown().getId().toString() : null)
+                .city(user.getHomeTown() != null ? user.getHomeTown().getName() : null)
                 .avatarUrl(user.getAvatarUrl())
                 .build();
     }

@@ -4,6 +4,7 @@ import com.horgaring.dateapp.data.*
 import com.horgaring.dateapp.data.api.ApiClient
 import com.horgaring.dateapp.data.api.TokenManager
 import com.horgaring.dateapp.data.api.dto.*
+import com.horgaring.dateapp.data.MockData
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -118,7 +119,7 @@ class DateAppRepository {
         return try {
             api.getChatRooms().map { it.toChatConversation() }
         } catch (e: Exception) {
-            emptyList()
+            MockData.chatRooms
         }
     }
 
@@ -127,7 +128,7 @@ class DateAppRepository {
             val myId = TokenManager.userId
             api.getMessages(chatRoomId).map { it.toMessage(myId) }
         } catch (e: Exception) {
-            emptyList()
+            MockData.chatRooms.find { it.id == chatRoomId }?.messages ?: emptyList()
         }
     }
 
